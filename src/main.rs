@@ -28,8 +28,8 @@ fn main() {
         },
         // Show calculation history
         CalcOp::History => {
-            if let Ok(res) = Path::new(HISTORY_FILE).try_exists() {
-                if !res {
+            if let Ok(file_exists) = Path::new(HISTORY_FILE).try_exists() {
+                if !file_exists {
                     println!("Calculation history does not exist.");
                 }
                 else {
@@ -63,8 +63,8 @@ fn log_calculation_to_file(calc: &Calculator, res: i32) {
                        res);
 
     // Check if file exists: if no, create one
-    if let Ok(res) = Path::new(HISTORY_FILE).try_exists() {
-        if !res {
+    if let Ok(file_exists) = Path::new(HISTORY_FILE).try_exists() {
+        if !file_exists {
             File::create(HISTORY_FILE).unwrap();
         }
     }

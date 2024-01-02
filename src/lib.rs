@@ -10,6 +10,7 @@ pub struct Calculator {
     // Second value
     pub n2: i32
 }
+
 impl Calculator {
     /// Create an instance of Calculator from arguments provided.
     pub fn from_args(args: &[String]) -> Result<Calculator, &'static str> {
