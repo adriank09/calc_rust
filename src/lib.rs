@@ -1,63 +1,90 @@
-use std::fmt::{Display, Formatter, write};
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-pub struct Calculate {
+/// Calculator.
+pub struct Calculator {
+    // Calculation operation
     pub op: CalcOp,
+    // First value
     pub n1: i32,
+    // Second value
     pub n2: i32
 }
-impl Calculate {
-    /// Create an instance of Calculate from env args
-    pub fn from_args(args: &[String]) -> Result<Calculate, &'static str> {
-        if args.len() < 4 {
+impl Calculator {
+    /// Create an instance of Calculator from arguments provided.
+    pub fn from_args(args: &[String]) -> Result<Calculator, &'static str> {
+        let len = args.len();
+        if len < 2 {
             return Err("not enough arguments");
         }
-        let op = &args[1];
-        let val1 = &args[2];
-        let val2 = &args[3];
 
-        // TODO: panics may occur for the following. fix such that they don't panic.
-        let o: CalcOp = op.parse().unwrap();
-        let v1: i32 = val1.parse().unwrap();
-        let v2: i32 = val2.parse().unwrap();
+        let op = &args[1];
+        let o: CalcOp = op.parse().expect("Expected a valid operation");
+        if o != CalcOp::History && len < 4 {
+            return Err("not enough arguments");
+        }
+
+        let mut v1: i32 = -1;
+        let mut v2: i32 = -1;
+
+        if o == CalcOp::History {
+            // Skip parsing the two values as they are not expected.
+        }
+        else {
+            let val1 = &args[2];
+            let val2 = &args[3];
+
+            v1 = val1.parse().expect("Expected an integer value");
+            v2 = val2.parse().expect("Expected an integer value");
+        }
 
         Ok(Self::new(o, v1, v2))
     }
+
     /// Creates a new instance of Calculator
-    pub fn new(op: CalcOp, n1: i32, n2: i32) -> Calculate {
-        Calculate { op, n1, n2 }
+    pub fn new(op: CalcOp, n1: i32, n2: i32) -> Calculator {
+        Calculator { op, n1, n2 }
     }
 
-    /// Calculates the result.
+    /// Calculates and returns the result.
     pub fn calculate(self: &Self) -> i32 {
         match self.op {
-            CalcOp::Add => Calculate::add(self.n1, self.n2),
-            CalcOp::Sub => Calculate::sub(self.n1, self.n2),
-            CalcOp::Mul => Calculate::mul(self.n1, self.n2),
-            CalcOp::Div => Calculate::div(self.n1, self.n2),
+            CalcOp::Add => Calculator::add(self.n1, self.n2),
+            CalcOp::Sub => Calculator::sub(self.n1, self.n2),
+            CalcOp::Mul => Calculator::mul(self.n1, self.n2),
+            CalcOp::Div => Calculator::div(self.n1, self.n2),
+            _ => todo!()
         }
     }
 
+    /// Performs addition against the two values.
     fn add(n1: i32, n2: i32) -> i32 {
         n1 + n2
     }
 
+    /// Performs subtraction against the two values.
     fn sub(n1: i32, n2: i32) -> i32 {
         n1 - n2
     }
 
+    /// Performs multiplication against the two values.
     fn mul(n1: i32, n2: i32) -> i32 {
         n1 * n2
     }
 
+    /// Performs division against the two values.
     fn div(n1: i32, n2: i32) -> i32 {
+        // To prevent div by zero error.
+        if n2 == 0 {
+            return 0;
+        }
         n1 / n2
     }
-
 }
 
 /// Calculator operations in enum form.
-pub enum CalcOp { Add, Sub, Mul, Div }
+#[derive(PartialEq)]
+pub enum CalcOp { Add, Sub, Mul, Div, History }
 
 /// Displays the string representation of each enum value.
 impl Display for CalcOp {
@@ -67,6 +94,7 @@ impl Display for CalcOp {
             CalcOp::Sub => write!(f, "Subtraction"),
             CalcOp::Mul => write!(f, "Multiplication"),
             CalcOp::Div => write!(f, "Division"),
+            CalcOp::History => write!(f, "History")
         }
     }
 }
@@ -84,6 +112,7 @@ impl FromStr for CalcOp {
             "sub" => Ok(CalcOp::Sub),
             "mul" => Ok(CalcOp::Mul),
             "div" => Ok(CalcOp::Div),
+            "hist" => Ok(CalcOp::History),
             _ => Err(())
         }
     }
