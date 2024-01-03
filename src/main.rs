@@ -3,10 +3,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
 use chrono::Local;
-use calc::{CalcOp, Calculator};
-
-/// Name of history file which stores the successful calculations done in the past.
-static HISTORY_FILE: &str = "history.txt";
+use calc::calculator::{CalcOp, Calculator};
 
 /// Main program.
 fn main() {
@@ -28,12 +25,12 @@ fn main() {
         },
         // Show calculation history
         CalcOp::History => {
-            if let Ok(file_exists) = Path::new(HISTORY_FILE).try_exists() {
+            if let Ok(file_exists) = Path::new(calc::calculator::HISTORY_FILE).try_exists() {
                 if !file_exists {
                     println!("Calculation history does not exist.");
                 }
                 else {
-                    if let Ok(mut file) = File::open(HISTORY_FILE) {
+                    if let Ok(mut file) = File::open(calc::calculator::HISTORY_FILE) {
                         let mut contents = String::new();
                         file.read_to_string(&mut contents).expect("Able to read history file");
 
@@ -63,16 +60,16 @@ fn log_calculation_to_file(calc: &Calculator, res: i32) {
                        res);
 
     // Check if file exists: if no, create one
-    if let Ok(file_exists) = Path::new(HISTORY_FILE).try_exists() {
+    if let Ok(file_exists) = Path::new(calc::calculator::HISTORY_FILE).try_exists() {
         if !file_exists {
-            File::create(HISTORY_FILE).unwrap();
+            File::create(calc::calculator::HISTORY_FILE).unwrap();
         }
     }
 
     // Opens the file and prepare it for writing
     let file = OpenOptions::new()
         .append(true)
-        .open(HISTORY_FILE);
+        .open(calc::calculator::HISTORY_FILE);
 
     // Write to file
     if let Ok(mut file) = file {
