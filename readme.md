@@ -3,7 +3,7 @@ A program implemented in Rust that calculates two values based on the specified 
 # Why
 - To serve as a toy app while messing around with Rust.
 # How
-To use this app, invoke the following in your favorite terminal application.
+To use this app, invoke the following in a terminal.
 ```
 calc <op> [<first_value> <second_value>]
 ```
